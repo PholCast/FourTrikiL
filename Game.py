@@ -4,10 +4,12 @@ class Game:
         self.board = ["-"for i in range(16)]
         #self.winner = False
         self.turn = ""
+        self.play()
 
     def play(self):
         while(True):
             while(True):
+                self.printBoard()
                 self.switchPlayer()
 
                 self.insertPiece()
@@ -16,23 +18,61 @@ class Game:
                     break
 
                 if self.verifyWinner():
+                    self.printBoard()
+                    print(f"{self.turn} ha ganado")
                     break
                     #self.winner = True
 
             if not self.playAgain():
                 break
+    
+    #def printBoard(self):
+
+    def printBoard(self):
+        print("Tablero:")
+        for i in range(4):
+            for j in range(4):
+                cell = self.board[i * 4 + j]
+                if j < 3:
+                    print(f"{cell} |", end=" ")
+                else:
+                    print(cell, end=" ")
+            print()  # Nueva línea después de cada fila
+            if i < 3:
+                print("─" *14)  # Línea divisoria entre filas
+        print()  # Línea en blanco para separar el tablero
 
 
     def verifyWinner(self):
-        pass
-        #p1 = 
+            firstcell= 0
+            secondCell = 4
+            thirdCell = 5
+
+            while(True):
+                if thirdCell > 15:
+                    break
+                for i in range(3):
+                    if (self.board[firstcell] == self.board[secondCell] and
+                       self.board[secondCell] == self.board[thirdCell] and
+                       self.board[firstcell] != "-"
+                       ):
+                        return True
+                    firstcell+=1
+                    secondCell+=1
+                    thirdCell+=1
+                
+                firstcell+=1
+                secondCell+=1
+                thirdCell+=1
+            
+            return False
 
     def isFull(self):
 
         for i in range(16):
             if self.board[i]== "-":
                 return False
-        
+        self.printBoard()
         print("EMPATE, el tablero está lleno")
         return True
 
@@ -63,13 +103,13 @@ class Game:
 
 
     def insertPiece(self):
-        listMove =  self.requestMove()
+        piece =  self.requestMove()
 
         if self.turn == "player":
-           self.board[listMove[0]][listMove[1]] = "X"
+           self.board[piece] = "X"
            
         else:
-           self.board[listMove[0]][listMove[1]] = "O"
+           self.board[piece] = "O"
            
 
     def requestMove(self):
