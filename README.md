@@ -1,2 +1,2 @@
 # FourTrikiL
-UdeMfiki for PholCast and Leonard
+UdeMfiki by PholCast and Leonard
