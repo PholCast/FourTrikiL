@@ -1,8 +1,13 @@
 import random
+import os
+import math
+
 class Game:
     def __init__(self):
         self.board = ["-"for i in range(16)]
+        #self.board = ['X', '-', '-', 'O', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-']
         #self.winner = False
+        self.numberMoves = 0
         self.turn = ""
         self.play()
 
@@ -15,6 +20,8 @@ class Game:
                 self.insertPiece()
 
                 if self.isFull():
+                    self.printBoard()
+                    print("EMPATE, el tablero está lleno")
                     break
 
                 if self.verifyWinner():
@@ -56,7 +63,7 @@ class Game:
                        self.board[secondCell] == self.board[thirdCell] and
                        self.board[firstcell] != "-"
                        ):
-                        return True
+                        return self.board[firstcell]
                     firstcell+=1
                     secondCell+=1
                     thirdCell+=1
@@ -72,8 +79,8 @@ class Game:
         for i in range(16):
             if self.board[i]== "-":
                 return False
-        self.printBoard()
-        print("EMPATE, el tablero está lleno")
+        #self.printBoard()
+        #print("EMPATE, el tablero está lleno")
         return True
 
 
@@ -84,6 +91,7 @@ class Game:
             self.board = ["-"for i in range(16)]
             #self.winner = False
             self.turn = ""
+            os.system('cls')
             return True
         else:
             print("Juego Finalizado")
@@ -114,24 +122,81 @@ class Game:
 
     def requestMove(self):
         if self.turn == "player":
+
             while(True):
-                piece = int(input("Selecciona la casilla:"))
-                if (0 <= piece <16 and self.board[piece]== "-"):
-                    break
-                else:
-                    print("\nPosicion invalida. Ingresala nuevamente\n")
+                try:
+                    piece = int(input("Selecciona la casilla:"))
+                    if (0 <= piece <16 and self.board[piece]== "-"):
+                        break
+                    else:
+                        print("\nPosicion invalida. Ingresala nuevamente\n")
+                except ValueError:
+                    print("Caracter invalido")
 
         else:
             #supongo que aqui iria el min max para que escoja la posicion
-            while(True):
-                piece = random.randint(0,15)
-                
-                if self.board[piece]== "-":
-                    break
-                else:
-                    pass
+            piece = self.bestMove(self.board,"O")
 
         return piece
+    
+    def minimax(self,board,alpha,beta, maximizing,):
+        if self.verifyWinner() == "O":
+            return 1
+        elif self.verifyWinner() == "X":
+            return -1
+        elif self.isFull():
+            return 0
+
+        
+        if maximizing:
+            bestScore = -math.inf
+            for i in range(16):
+                if board[i] == "-":
+                    board[i] = "O"
+                    score = self.minimax(board,alpha,beta,False)
+                    board[i] = "-"
+                    bestScore = max(bestScore,score)
+
+                    alpha = max(alpha,bestScore)
+                    if (alpha >= beta):
+                        print("PODA ALFA")
+                        break #alpha-beta-pruning
+            return bestScore
+        else:
+            bestScore = math.inf
+            for i in range(16):
+                if board[i] == "-":
+                    board[i] = "X"
+                    score = self.minimax(board,alpha,beta,True)
+                    board[i] = "-"
+                    bestScore = min(bestScore,score)
+
+                    beta = min(beta,bestScore)
+                    if (alpha >= beta):
+                        print("PODA BETA")
+                        break #alpha-beta-pruning
+            return bestScore
+
+
+    def bestMove(self,board,AI):
+        bestScore = -math.inf
+        
+        for i in range(16):
+            if board[i] == "-":
+                board[i]= "O"
+
+                score = self.minimax(board,-math.inf,math.inf,False)
+                board[i] = "-"
+                print("Score es: ",score)
+                if (score > bestScore): 
+                    bestScore = score
+                    move = i
+        
+        print("Score fuera fue:",score)
+        print("BestScore fuera fue:",score)
+        
+        print("Aqui retorno move",move)
+        return move
 
 
             
